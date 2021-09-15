@@ -3,10 +3,12 @@ package provider
 import (
 	"context"
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/umich-vci/gopas"
 )
 
@@ -50,18 +52,15 @@ func New(version string) func() *schema.Provider {
 					Description: "This is the hostname or IP address of the CyberArk PAS server. This must be provided in the config or in the environment variable `PAS_HOST`.",
 				},
 				"auth_type": {
-					Type:        schema.TypeString,
-					Required:    true,
-					DefaultFunc: schema.EnvDefaultFunc("PAS_AUTH_TYPE", nil),
-					Description: "This is the authentication type to use with the CyberArk PAS server. This must be provided in the config or in the environment variable `PAS_AUTH_TYPE`.",
+					Type:         schema.TypeString,
+					Required:     true,
+					DefaultFunc:  schema.EnvDefaultFunc("PAS_AUTH_TYPE", nil),
+					ValidateFunc: validation.StringInSlice([]string{"ldap", "radius", "cyberark"}, true),
+					Description:  "This is the authentication type to use with the CyberArk PAS server. This must be provided in the config or in the environment variable `PAS_AUTH_TYPE`.",
 				},
 			},
-			DataSourcesMap: map[string]*schema.Resource{
-				"scaffolding_data_source": dataSourceScaffolding(),
-			},
-			ResourcesMap: map[string]*schema.Resource{
-				"scaffolding_resource": resourceScaffolding(),
-			},
+			DataSourcesMap: map[string]*schema.Resource{},
+			ResourcesMap:   map[string]*schema.Resource{},
 		}
 
 		p.ConfigureContextFunc = configure(version, p)
@@ -94,7 +93,18 @@ func configure(version string, p *schema.Provider) func(context.Context, *schema
 		data.ConcurrentSession = &concurrent
 
 		client := gopas.NewAPIClient(config)
-		client.AuthApi.AuthLogon(ctx, authType).Data(data).Execute()
+		resp, err := client.AuthApi.AuthLogon(ctx, authType).Data(data).Execute()
+		if err != nil {
+			return nil, diag.FromErr(err)
+		}
+
+		token, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, diag.FromErr(err)
+		}
+
+		//Add the token we just got to the default header and strip away the outermost quotation marks
+		client.GetConfig().AddDefaultHeader("Authorization", string(token[1:len(token)-1]))
 
 		return &apiClient{Client: *client}, nil
 	}
