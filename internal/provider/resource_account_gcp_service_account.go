@@ -53,7 +53,7 @@ func resourceAccountGCPServiceAccount() *schema.Resource {
 			},
 			"populate_key": {
 				Description: "Indicates whether to populate the key if it doesn't exist on reconcile.",
-				Type:        schema.TypeString,
+				Type:        schema.TypeBool,
 				Optional:    true,
 			},
 			"category_modification_time": {
@@ -99,7 +99,11 @@ func resourceAccountGCPServiceAccountCreate(ctx context.Context, d *schema.Resou
 	}
 
 	if p, ok := d.GetOk("populate_key"); ok {
-		prop["PopulateKey"] = p.(string)
+		populate := "No"
+		if p.(bool) {
+			populate = "Yes"
+		}
+		prop["PopulateKey"] = populate
 	}
 
 	account.PlatformAccountProperties = &prop
@@ -197,7 +201,11 @@ func resourceAccountGCPServiceAccountUpdate(ctx context.Context, d *schema.Resou
 	}
 
 	if d.HasChange("populate_key") {
-		prop["PopulateKey"] = d.Get("populate_key")
+		populate := "No"
+		if d.Get("populate_key").(bool) {
+			populate = "Yes"
+		}
+		prop["PopulateKey"] = populate
 	}
 
 	if len(prop) > 0 {
