@@ -11,7 +11,7 @@ import (
 
 func resourceAccountGCPServiceAccount() *schema.Resource {
 	return &schema.Resource{
-		Description: "Resource to manage a privileged account or SSH key in CyberArk PAS",
+		Description: "Resource to manage a GCP Service Account in CyberArk PAS",
 
 		CreateContext: resourceAccountGCPServiceAccountCreate,
 		ReadContext:   resourceAccountGCPServiceAccountRead,
