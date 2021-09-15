@@ -36,14 +36,14 @@ func New(version string) func() *schema.Provider {
 					Type:        schema.TypeString,
 					Required:    true,
 					DefaultFunc: schema.EnvDefaultFunc("PAS_USERNAME", nil),
-					Description: "This is the username to use to access the Red Hat Satellite server. This must be provided in the config or in the environment variable `PAS_USERNAME`.",
+					Description: "This is the username to use to access the CyberArk PAS server. This must be provided in the config or in the environment variable `PAS_USERNAME`.",
 				},
 				"password": {
 					Type:        schema.TypeString,
 					Required:    true,
 					Sensitive:   true,
 					DefaultFunc: schema.EnvDefaultFunc("PAS_PASSWORD", nil),
-					Description: "This is the password to use to access the Red Hat Satellite server. This must be provided in the config or in the environment variable `PAS_PASSWORD`.",
+					Description: "This is the password to use to access the CyberArk PAS server. This must be provided in the config or in the environment variable `PAS_PASSWORD`.",
 				},
 				"pas_host": {
 					Type:        schema.TypeString,
