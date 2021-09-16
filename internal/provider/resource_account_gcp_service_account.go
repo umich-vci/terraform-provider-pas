@@ -19,11 +19,6 @@ func resourceAccountGCPServiceAccount() *schema.Resource {
 		DeleteContext: resourceAccountGCPServiceAccountDelete,
 
 		Schema: map[string]*schema.Schema{
-			"key_id": {
-				Description: "The ID of the GCP key",
-				Type:        schema.TypeString,
-				Required:    true,
-			},
 			"safe_name": {
 				Description: "The name of the safe to create the GCP service account in.",
 				Type:        schema.TypeString,
@@ -38,12 +33,6 @@ func resourceAccountGCPServiceAccount() *schema.Resource {
 				Description: "The name of the user with user management permissions that the plugin uses for connecting and managing account passwords for the GCP Account Management plugin.",
 				Type:        schema.TypeString,
 				Optional:    true,
-			},
-			"key": {
-				Description: "The JSON value of the GCP key.",
-				Type:        schema.TypeString,
-				Optional:    true,
-				Sensitive:   true,
 			},
 			"name": {
 				Description: "The name of the account.",
@@ -64,6 +53,11 @@ func resourceAccountGCPServiceAccount() *schema.Resource {
 			"created_time": {
 				Description: "",
 				Type:        schema.TypeInt,
+				Computed:    true,
+			},
+			"key_id": {
+				Description: "The ID of the GCP key",
+				Type:        schema.TypeString,
 				Computed:    true,
 			},
 		},
@@ -87,7 +81,7 @@ func resourceAccountGCPServiceAccountCreate(ctx context.Context, d *schema.Resou
 	}
 
 	prop := make(map[string]string)
-	prop["KeyID"] = d.Get("key_id").(string)
+	prop["KeyID"] = "TerraformCreatedAccount"
 
 	if i, ok := d.GetOk("impersonate_user"); ok {
 		prop["ImpersonateUser"] = i.(string)
