@@ -40,6 +40,12 @@ func resourceAccountGCPServiceAccount() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"platform_id": {
+				Description: "The Platform ID to use for the GCP Service Account.",
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     "GCPServiceAccount",
+			},
 			"populate_key": {
 				Description: "Indicates whether to populate the key if it doesn't exist on reconcile.",
 				Type:        schema.TypeBool,
@@ -67,7 +73,7 @@ func resourceAccountGCPServiceAccount() *schema.Resource {
 func resourceAccountGCPServiceAccountCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*apiClient).Client
 
-	platformID := "GCPServiceAccount"
+	platformID := d.Get("platform_id").(string)
 	safeName := d.Get("safe_name").(string)
 
 	account := *gopas.NewAccountModel(platformID, safeName)
