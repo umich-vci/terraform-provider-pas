@@ -268,8 +268,17 @@ func resourceAccountGCPServiceAccountRead(ctx context.Context, d *schema.Resourc
 		}
 	}
 
-	d.Set("change_account", []map[string]interface{}{changeAccount})
-	d.Set("reconcile_account", []map[string]interface{}{reconcileAccount})
+	if len(changeAccount) > 0 {
+		d.Set("change_account", []map[string]interface{}{changeAccount})
+	} else {
+		d.Set("change_account", nil)
+	}
+
+	if len(reconcileAccount) > 0 {
+		d.Set("reconcile_account", []map[string]interface{}{reconcileAccount})
+	} else {
+		d.Set("reconcile_account", nil)
+	}
 
 	if (*account.PlatformAccountProperties)["PopulateKey"] == "Yes" {
 		d.Set("populate_key", true)
@@ -372,18 +381,74 @@ func resourceAccountGCPServiceAccountUpdate(ctx context.Context, d *schema.Resou
 		operations = append(operations, operation)
 	}
 
-	_, resp, err := client.AccountsApi.AccountsUpdateAccount(ctx, id).AccountPatch(operations).Execute()
-	if err != nil {
-		var diags diag.Diagnostics
-		diags = append(diags, diag.FromErr(err)...)
-
-		b, err := io.ReadAll(resp.Body)
+	if len(operations) > 0 {
+		_, resp, err := client.AccountsApi.AccountsUpdateAccount(ctx, id).AccountPatch(operations).Execute()
 		if err != nil {
+			var diags diag.Diagnostics
 			diags = append(diags, diag.FromErr(err)...)
-		}
 
-		diags = append(diags, diag.Errorf(string(b))...)
-		return diags
+			b, err := io.ReadAll(resp.Body)
+			if err != nil {
+				diags = append(diags, diag.FromErr(err)...)
+			}
+
+			diags = append(diags, diag.Errorf(string(b))...)
+			return diags
+		}
+	}
+
+	if d.HasChange("change_account") {
+		_, n := d.GetChange("change_account")
+		if n == nil {
+			// delete not implemented yet
+		} else {
+			changeAccount := n.(*schema.Set).List()[0].(map[string]interface{})
+			safeName := changeAccount["safe_name"].(string)
+			name := changeAccount["name"].(string)
+			folder := changeAccount["folder"].(string)
+			linkAccount := *gopas.NewLinkAccountData(name, safeName, folder, 2)
+
+			resp, err := client.AccountsApi.AccountsLinkAccount(ctx, id).LinkAccount(linkAccount).Execute()
+			if err != nil {
+				var diags diag.Diagnostics
+				diags = append(diags, diag.FromErr(err)...)
+
+				b, err := io.ReadAll(resp.Body)
+				if err != nil {
+					diags = append(diags, diag.FromErr(err)...)
+				}
+
+				diags = append(diags, diag.Errorf(string(b))...)
+				return diags
+			}
+		}
+	}
+
+	if d.HasChange("reconcile_account") {
+		_, n := d.GetChange("reconcile_account")
+		if n == nil {
+			// delete not implemented yet
+		} else {
+			reconcileAccount := n.(*schema.Set).List()[0].(map[string]interface{})
+			safeName := reconcileAccount["safe_name"].(string)
+			name := reconcileAccount["name"].(string)
+			folder := reconcileAccount["folder"].(string)
+			linkAccount := *gopas.NewLinkAccountData(name, safeName, folder, 3)
+
+			resp, err := client.AccountsApi.AccountsLinkAccount(ctx, id).LinkAccount(linkAccount).Execute()
+			if err != nil {
+				var diags diag.Diagnostics
+				diags = append(diags, diag.FromErr(err)...)
+
+				b, err := io.ReadAll(resp.Body)
+				if err != nil {
+					diags = append(diags, diag.FromErr(err)...)
+				}
+
+				diags = append(diags, diag.Errorf(string(b))...)
+				return diags
+			}
+		}
 	}
 
 	return resourceAccountGCPServiceAccountRead(ctx, d, meta)
