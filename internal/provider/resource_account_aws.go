@@ -173,7 +173,6 @@ func resourceAccountAWSUpdate(ctx context.Context, d *schema.ResourceData, meta 
 
 	id := d.Id()
 
-	accountPatch := *gopas.NewJsonPatchDocumentAccountModel()
 	operations := []gopas.OperationAccountModel{}
 	op := "replace"
 
@@ -235,11 +234,9 @@ func resourceAccountAWSUpdate(ctx context.Context, d *schema.ResourceData, meta 
 		operations = append(operations, operation)
 	}
 
-	accountPatch.Operations = &operations
-
-	_, _, err := client.AccountsApi.AccountsUpdateAccount(ctx, id).AccountPatch(accountPatch).Execute()
+	_, _, err := client.AccountsApi.AccountsUpdateAccount(ctx, id).AccountPatch(operations).Execute()
 	if err != nil {
-		diag.FromErr(err)
+		return diag.FromErr(err)
 	}
 
 	return resourceAccountAWSRead(ctx, d, meta)
