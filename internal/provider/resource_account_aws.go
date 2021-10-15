@@ -234,7 +234,10 @@ func resourceAccountAWSUpdate(ctx context.Context, d *schema.ResourceData, meta 
 		operations = append(operations, operation)
 	}
 
-	_, _, err := client.AccountsApi.AccountsUpdateAccount(ctx, id).AccountPatch(operations).Execute()
+	patch := *gopas.NewJsonPatchDocumentAccountModel()
+	patch.SetOperations(operations)
+
+	_, _, err := client.AccountsApi.AccountsUpdateAccount(ctx, id).AccountPatch(patch).Execute()
 	if err != nil {
 		return diag.FromErr(err)
 	}

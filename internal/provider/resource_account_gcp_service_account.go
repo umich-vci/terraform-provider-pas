@@ -382,7 +382,10 @@ func resourceAccountGCPServiceAccountUpdate(ctx context.Context, d *schema.Resou
 	}
 
 	if len(operations) > 0 {
-		_, resp, err := client.AccountsApi.AccountsUpdateAccount(ctx, id).AccountPatch(operations).Execute()
+		patch := *gopas.NewJsonPatchDocumentAccountModel()
+		patch.SetOperations(operations)
+
+		_, resp, err := client.AccountsApi.AccountsUpdateAccount(ctx, id).AccountPatch(patch).Execute()
 		if err != nil {
 			var diags diag.Diagnostics
 			diags = append(diags, diag.FromErr(err)...)
