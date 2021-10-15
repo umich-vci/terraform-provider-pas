@@ -384,7 +384,10 @@ func resourceAccountGCPServiceAccountUpdate(ctx context.Context, d *schema.Resou
 	if d.HasChange("change_account") {
 		_, n := d.GetChange("change_account")
 		if n == nil {
-			// delete not implemented yet
+			resp, err := client.AccountsApi.AccountsClearAccount(ctx, id, 2).Execute()
+			if err != nil {
+				return returnResponseErr(resp, err)
+			}
 		} else {
 			changeAccount := n.(*schema.Set).List()[0].(map[string]interface{})
 			safeName := changeAccount["safe_name"].(string)
@@ -402,7 +405,10 @@ func resourceAccountGCPServiceAccountUpdate(ctx context.Context, d *schema.Resou
 	if d.HasChange("reconcile_account") {
 		_, n := d.GetChange("reconcile_account")
 		if n == nil {
-			// delete not implemented yet
+			resp, err := client.AccountsApi.AccountsClearAccount(ctx, id, 3).Execute()
+			if err != nil {
+				return returnResponseErr(resp, err)
+			}
 		} else {
 			reconcileAccount := n.(*schema.Set).List()[0].(map[string]interface{})
 			safeName := reconcileAccount["safe_name"].(string)
