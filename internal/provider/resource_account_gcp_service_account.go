@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-	"io"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -176,16 +175,7 @@ func resourceAccountGCPServiceAccountCreate(ctx context.Context, d *schema.Resou
 
 	act, resp, err := client.AccountsApi.AccountsAddAccount(ctx).Account(account).Execute()
 	if err != nil {
-		var diags diag.Diagnostics
-		diags = append(diags, diag.FromErr(err)...)
-
-		b, err := io.ReadAll(resp.Body)
-		if err != nil {
-			diags = append(diags, diag.FromErr(err)...)
-		}
-
-		diags = append(diags, diag.Errorf(string(b))...)
-		return diags
+		return returnResponseErr(resp, err)
 	}
 
 	id := act["id"].(string)
@@ -199,9 +189,9 @@ func resourceAccountGCPServiceAccountCreate(ctx context.Context, d *schema.Resou
 
 		linkAccount := *gopas.NewLinkAccountData(name, safeName, folder, 2)
 
-		_, err := client.AccountsApi.AccountsLinkAccount(ctx, id).LinkAccount(linkAccount).Execute()
+		resp, err := client.AccountsApi.AccountsLinkAccount(ctx, id).LinkAccount(linkAccount).Execute()
 		if err != nil {
-			return diag.FromErr(err)
+			return returnResponseErr(resp, err)
 		}
 	}
 
@@ -213,9 +203,9 @@ func resourceAccountGCPServiceAccountCreate(ctx context.Context, d *schema.Resou
 
 		linkAccount := *gopas.NewLinkAccountData(name, safeName, folder, 3)
 
-		_, err := client.AccountsApi.AccountsLinkAccount(ctx, id).LinkAccount(linkAccount).Execute()
+		resp, err := client.AccountsApi.AccountsLinkAccount(ctx, id).LinkAccount(linkAccount).Execute()
 		if err != nil {
-			return diag.FromErr(err)
+			return returnResponseErr(resp, err)
 		}
 	}
 
@@ -233,14 +223,14 @@ func resourceAccountGCPServiceAccountRead(ctx context.Context, d *schema.Resourc
 			d.SetId("")
 			return nil
 		}
-		return diag.FromErr(err)
+		return returnResponseErr(resp, err)
 	}
 
-	accountv1, _, err := client.AccountsApi.AccountsGetAccountLegacy(ctx).Keywords(*account.UserName).Safe(account.SafeName).Execute()
+	accountv1, resp, err := client.AccountsApi.AccountsGetAccountLegacy(ctx).Keywords(*account.UserName).Safe(account.SafeName).Execute()
 	if err != nil {
 		var diags diag.Diagnostics
 		diags = append(diags, diag.Errorf("Error finding account name %s with legacy API", *account.Name)...)
-		diags = append(diags, diag.FromErr(err)...)
+		diags = append(diags, returnResponseErr(resp, err)...)
 		return diags
 	}
 
@@ -387,16 +377,7 @@ func resourceAccountGCPServiceAccountUpdate(ctx context.Context, d *schema.Resou
 
 		_, resp, err := client.AccountsApi.AccountsUpdateAccount(ctx, id).AccountPatch(patch).Execute()
 		if err != nil {
-			var diags diag.Diagnostics
-			diags = append(diags, diag.FromErr(err)...)
-
-			b, err := io.ReadAll(resp.Body)
-			if err != nil {
-				diags = append(diags, diag.FromErr(err)...)
-			}
-
-			diags = append(diags, diag.Errorf(string(b))...)
-			return diags
+			return returnResponseErr(resp, err)
 		}
 	}
 
@@ -413,16 +394,7 @@ func resourceAccountGCPServiceAccountUpdate(ctx context.Context, d *schema.Resou
 
 			resp, err := client.AccountsApi.AccountsLinkAccount(ctx, id).LinkAccount(linkAccount).Execute()
 			if err != nil {
-				var diags diag.Diagnostics
-				diags = append(diags, diag.FromErr(err)...)
-
-				b, err := io.ReadAll(resp.Body)
-				if err != nil {
-					diags = append(diags, diag.FromErr(err)...)
-				}
-
-				diags = append(diags, diag.Errorf(string(b))...)
-				return diags
+				return returnResponseErr(resp, err)
 			}
 		}
 	}
@@ -440,16 +412,7 @@ func resourceAccountGCPServiceAccountUpdate(ctx context.Context, d *schema.Resou
 
 			resp, err := client.AccountsApi.AccountsLinkAccount(ctx, id).LinkAccount(linkAccount).Execute()
 			if err != nil {
-				var diags diag.Diagnostics
-				diags = append(diags, diag.FromErr(err)...)
-
-				b, err := io.ReadAll(resp.Body)
-				if err != nil {
-					diags = append(diags, diag.FromErr(err)...)
-				}
-
-				diags = append(diags, diag.Errorf(string(b))...)
-				return diags
+				return returnResponseErr(resp, err)
 			}
 		}
 	}
@@ -462,9 +425,9 @@ func resourceAccountGCPServiceAccountDelete(ctx context.Context, d *schema.Resou
 
 	id := d.Id()
 
-	_, _, err := client.AccountsApi.AccountsDeleteAccount(ctx, id).Execute()
+	_, resp, err := client.AccountsApi.AccountsDeleteAccount(ctx, id).Execute()
 	if err != nil {
-		return diag.FromErr(err)
+		return returnResponseErr(resp, err)
 	}
 
 	d.SetId("")

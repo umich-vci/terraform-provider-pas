@@ -2,7 +2,6 @@ package provider
 
 import (
 	"context"
-	"io"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -121,16 +120,7 @@ func resourceAccountAWSCreate(ctx context.Context, d *schema.ResourceData, meta 
 
 	act, resp, err := client.AccountsApi.AccountsAddAccount(ctx).Account(account).Execute()
 	if err != nil {
-		var diags diag.Diagnostics
-		diags = append(diags, diag.FromErr(err)...)
-
-		b, err := io.ReadAll(resp.Body)
-		if err != nil {
-			diags = append(diags, diag.FromErr(err)...)
-		}
-
-		diags = append(diags, diag.Errorf(string(b))...)
-		return diags
+		return returnResponseErr(resp, err)
 	}
 
 	d.SetId(act["id"].(string))
@@ -150,7 +140,7 @@ func resourceAccountAWSRead(ctx context.Context, d *schema.ResourceData, meta in
 			return nil
 		}
 
-		return diag.FromErr(err)
+		return returnResponseErr(resp, err)
 	}
 
 	d.Set("address", account.Address)
@@ -237,9 +227,9 @@ func resourceAccountAWSUpdate(ctx context.Context, d *schema.ResourceData, meta 
 	patch := *gopas.NewJsonPatchDocumentAccountModel()
 	patch.SetOperations(operations)
 
-	_, _, err := client.AccountsApi.AccountsUpdateAccount(ctx, id).AccountPatch(patch).Execute()
+	_, resp, err := client.AccountsApi.AccountsUpdateAccount(ctx, id).AccountPatch(patch).Execute()
 	if err != nil {
-		return diag.FromErr(err)
+		return returnResponseErr(resp, err)
 	}
 
 	return resourceAccountAWSRead(ctx, d, meta)
@@ -250,9 +240,9 @@ func resourceAccountAWSDelete(ctx context.Context, d *schema.ResourceData, meta 
 
 	id := d.Id()
 
-	_, _, err := client.AccountsApi.AccountsDeleteAccount(ctx, id).Execute()
+	_, resp, err := client.AccountsApi.AccountsDeleteAccount(ctx, id).Execute()
 	if err != nil {
-		return diag.FromErr(err)
+		return returnResponseErr(resp, err)
 	}
 
 	d.SetId("")
