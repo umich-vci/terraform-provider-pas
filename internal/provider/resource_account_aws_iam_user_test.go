@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestAccResourceAccountAWS(t *testing.T) {
+func TestAccResourceAccountAWSIAMUser(t *testing.T) {
 	t.Skip("resource not yet implemented, remove this once you add your own code")
 
 	resource.UnitTest(t, resource.TestCase{
@@ -15,7 +15,7 @@ func TestAccResourceAccountAWS(t *testing.T) {
 		ProviderFactories: providerFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccResourceAccountAWS,
+				Config: testAccResourceAccountAWSIAMUser,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestMatchResourceAttr(
 						"scaffolding_resource.foo", "sample_attribute", regexp.MustCompile("^ba")),
@@ -25,7 +25,7 @@ func TestAccResourceAccountAWS(t *testing.T) {
 	})
 }
 
-const testAccResourceAccountAWS = `
+const testAccResourceAccountAWSIAMUser = `
 resource "scaffolding_resource" "foo" {
   sample_attribute = "bar"
 }
