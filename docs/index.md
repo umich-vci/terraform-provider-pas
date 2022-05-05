@@ -24,7 +24,7 @@ provider "pas" {
 
 ### Required
 
-- **auth_type** (String) This is the authentication type to use with the CyberArk PAS server. This must be provided in the config or in the environment variable `PAS_AUTH_TYPE`.
-- **pas_host** (String) This is the hostname or IP address of the CyberArk PAS server. This must be provided in the config or in the environment variable `PAS_HOST`.
-- **password** (String, Sensitive) This is the password to use to access the CyberArk PAS server. This must be provided in the config or in the environment variable `PAS_PASSWORD`.
-- **username** (String) This is the username to use to access the CyberArk PAS server. This must be provided in the config or in the environment variable `PAS_USERNAME`.
+- `auth_type` (String) This is the authentication type to use with the CyberArk PAS server. This must be provided in the config or in the environment variable `PAS_AUTH_TYPE`.
+- `pas_host` (String) This is the hostname or IP address of the CyberArk PAS server. This must be provided in the config or in the environment variable `PAS_HOST`.
+- `password` (String, Sensitive) This is the password to use to access the CyberArk PAS server. This must be provided in the config or in the environment variable `PAS_PASSWORD`.
+- `username` (String) This is the username to use to access the CyberArk PAS server. This must be provided in the config or in the environment variable `PAS_USERNAME`.

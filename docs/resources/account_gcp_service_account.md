@@ -25,21 +25,48 @@ resource "pas_account_gcp_service_account" "gcp_sa" {
 
 ### Required
 
-- **key_id** (String) The ID of the GCP key
-- **safe_name** (String) The name of the safe to create the GCP service account in.
-- **username** (String) The e-mail of the GCP service account.
+- `safe_name` (String) The name of the safe to create the GCP service account in.
+- `username` (String) The e-mail of the GCP service account.
 
 ### Optional
 
-- **id** (String) The ID of this resource.
-- **impersonate_user** (String) The name of the user with user management permissions that the plugin uses for connecting and managing account passwords for the GCP Account Management plugin.
-- **key** (String, Sensitive) The JSON value of the GCP key.
-- **name** (String) The name of the account.
-- **populate_key** (Boolean) Indicates whether to populate the key if it doesn't exist on reconcile.
+- `change_account` (Block Set, Max: 1) The account to use as the change account. (see [below for nested schema](#nestedblock--change_account))
+- `impersonate_user` (String) The name of the user with user management permissions that the plugin uses for connecting and managing account passwords for the GCP Account Management plugin.
+- `name` (String) The name of the account.
+- `platform_id` (String) The Platform ID to use for the GCP Service Account. Defaults to `GCPServiceAccount`.
+- `populate_key` (Boolean) Indicates whether to populate the key if it doesn't exist on reconcile.
+- `reconcile_account` (Block Set, Max: 1) The account to use as the reconcile account. (see [below for nested schema](#nestedblock--reconcile_account))
 
 ### Read-Only
 
-- **category_modification_time** (Number)
-- **created_time** (Number)
+- `category_modification_time` (Number)
+- `created_time` (Number)
+- `id` (String) The ID of this resource.
+- `key_id` (String) The ID of the GCP key
+
+<a id="nestedblock--change_account"></a>
+### Nested Schema for `change_account`
+
+Required:
+
+- `name` (String) The name of the account to use as the change account.
+- `safe_name` (String) The name of the safe that contains the account to use as the change account.
+
+Optional:
+
+- `folder` (String) The folder the change account is located in. Defaults to `Root`.
+
+
+<a id="nestedblock--reconcile_account"></a>
+### Nested Schema for `reconcile_account`
+
+Required:
+
+- `name` (String) The name of the account to use as the change account.
+- `safe_name` (String) The name of the safe that contains the account to use as the change account.
+
+Optional:
+
+- `folder` (String) The folder the change account is located in. Defaults to `Root`.
 
 
