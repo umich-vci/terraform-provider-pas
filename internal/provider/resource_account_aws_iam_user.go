@@ -8,14 +8,14 @@ import (
 	"github.com/umich-vci/gopas"
 )
 
-func resourceAccountAWS() *schema.Resource {
+func resourceAccountAWSIAMUser() *schema.Resource {
 	return &schema.Resource{
 		Description: "Resource to manage AWS IAM User credentials in CyberArk PAS",
 
-		CreateContext: resourceAccountAWSCreate,
-		ReadContext:   resourceAccountAWSRead,
-		UpdateContext: resourceAccountAWSUpdate,
-		DeleteContext: resourceAccountAWSDelete,
+		CreateContext: resourceAccountAWSIAMUserCreate,
+		ReadContext:   resourceAccountAWSIAMUserRead,
+		UpdateContext: resourceAccountAWSIAMUserUpdate,
+		DeleteContext: resourceAccountAWSIAMUserDelete,
 
 		Schema: map[string]*schema.Schema{
 			"aws_account_id": {
@@ -80,7 +80,7 @@ func resourceAccountAWS() *schema.Resource {
 	}
 }
 
-func resourceAccountAWSCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAccountAWSIAMUserCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*apiClient).Client
 
 	platformID := "AWS"
@@ -125,10 +125,10 @@ func resourceAccountAWSCreate(ctx context.Context, d *schema.ResourceData, meta 
 
 	d.SetId(act["id"].(string))
 
-	return resourceAccountAWSRead(ctx, d, meta)
+	return resourceAccountAWSIAMUserRead(ctx, d, meta)
 }
 
-func resourceAccountAWSRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAccountAWSIAMUserRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*apiClient).Client
 
 	id := d.Id()
@@ -158,7 +158,7 @@ func resourceAccountAWSRead(ctx context.Context, d *schema.ResourceData, meta in
 	return nil
 }
 
-func resourceAccountAWSUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAccountAWSIAMUserUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*apiClient).Client
 
 	id := d.Id()
@@ -232,10 +232,10 @@ func resourceAccountAWSUpdate(ctx context.Context, d *schema.ResourceData, meta 
 		return returnResponseErr(resp, err)
 	}
 
-	return resourceAccountAWSRead(ctx, d, meta)
+	return resourceAccountAWSIAMUserRead(ctx, d, meta)
 }
 
-func resourceAccountAWSDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAccountAWSIAMUserDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*apiClient).Client
 
 	id := d.Id()

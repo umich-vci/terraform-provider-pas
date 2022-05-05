@@ -61,7 +61,7 @@ func New(version string) func() *schema.Provider {
 			},
 			DataSourcesMap: map[string]*schema.Resource{},
 			ResourcesMap: map[string]*schema.Resource{
-				"pas_account_aws":                 resourceAccountAWS(),
+				"pas_account_aws_iam_user":        resourceAccountAWSIAMUser(),
 				"pas_account_gcp_service_account": resourceAccountGCPServiceAccount(),
 			},
 		}
