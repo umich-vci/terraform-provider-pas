@@ -382,13 +382,16 @@ func resourceAccountGCPServiceAccountUpdate(ctx context.Context, d *schema.Resou
 	}
 
 	if d.HasChange("change_account") {
-		_, n := d.GetChange("change_account")
-		if n == nil {
+		o, n := d.GetChange("change_account")
+		// if the old account had a value, clear it
+		if o != nil {
 			resp, err := client.AccountsApi.AccountsClearAccount(ctx, id, 2).Execute()
 			if err != nil {
 				return returnResponseErr(resp, err)
 			}
-		} else {
+		}
+		// if the new account has a value, set it
+		if n != nil {
 			changeAccount := n.(*schema.Set).List()[0].(map[string]interface{})
 			safeName := changeAccount["safe_name"].(string)
 			name := changeAccount["name"].(string)
@@ -403,13 +406,16 @@ func resourceAccountGCPServiceAccountUpdate(ctx context.Context, d *schema.Resou
 	}
 
 	if d.HasChange("reconcile_account") {
-		_, n := d.GetChange("reconcile_account")
-		if n == nil {
+		o, n := d.GetChange("reconcile_account")
+		// if the old account had a value, clear it
+		if o != nil {
 			resp, err := client.AccountsApi.AccountsClearAccount(ctx, id, 3).Execute()
 			if err != nil {
 				return returnResponseErr(resp, err)
 			}
-		} else {
+		}
+		// if the new account has a value, set it
+		if n != nil {
 			reconcileAccount := n.(*schema.Set).List()[0].(map[string]interface{})
 			safeName := reconcileAccount["safe_name"].(string)
 			name := reconcileAccount["name"].(string)
