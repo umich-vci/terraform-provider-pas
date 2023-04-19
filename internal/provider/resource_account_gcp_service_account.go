@@ -37,7 +37,7 @@ func resourceAccountGCPServiceAccount() *schema.Resource {
 			},
 			"change_account": {
 				Description: "The account to use as the change account.",
-				Type:        schema.TypeSet,
+				Type:        schema.TypeList,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"safe_name": {
@@ -88,7 +88,7 @@ func resourceAccountGCPServiceAccount() *schema.Resource {
 			},
 			"reconcile_account": {
 				Description: "The account to use as the reconcile account.",
-				Type:        schema.TypeSet,
+				Type:        schema.TypeList,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"safe_name": {
@@ -303,17 +303,17 @@ func resourceAccountGCPServiceAccountUpdate(ctx context.Context, d *schema.Resou
 	rootProp := make(map[string]interface{})
 
 	if d.HasChange("safe_name") {
-		_, n := d.GetChange("safe_name")
+		n := d.Get("safe_name")
 		rootProp["safeName"] = n
 	}
 
 	if d.HasChange("name") {
-		_, n := d.GetChange("name")
+		n := d.Get("name")
 		rootProp["name"] = n
 	}
 
 	if d.HasChange("username") {
-		_, n := d.GetChange("username")
+		n := d.Get("username")
 		rootProp["userName"] = n
 	}
 
@@ -352,7 +352,7 @@ func resourceAccountGCPServiceAccountUpdate(ctx context.Context, d *schema.Resou
 	}
 
 	if d.HasChange("populate_key") {
-		_, n := d.GetChange("populate_key")
+		n := d.Get("populate_key")
 		populate := "No"
 		if n == nil {
 			populate = ""
