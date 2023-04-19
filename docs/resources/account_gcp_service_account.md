@@ -30,12 +30,12 @@ resource "pas_account_gcp_service_account" "gcp_sa" {
 
 ### Optional
 
-- `change_account` (Block Set, Max: 1) The account to use as the change account. (see [below for nested schema](#nestedblock--change_account))
+- `change_account` (Block List, Max: 1) The account to use as the change account. (see [below for nested schema](#nestedblock--change_account))
 - `impersonate_user` (String) The name of the user with user management permissions that the plugin uses for connecting and managing account passwords for the GCP Account Management plugin.
 - `name` (String) The name of the account.
 - `platform_id` (String) The Platform ID to use for the GCP Service Account. Defaults to `GCPServiceAccount`.
 - `populate_key` (Boolean) Indicates whether to populate the key if it doesn't exist on reconcile.
-- `reconcile_account` (Block Set, Max: 1) The account to use as the reconcile account. (see [below for nested schema](#nestedblock--reconcile_account))
+- `reconcile_account` (Block List, Max: 1) The account to use as the reconcile account. (see [below for nested schema](#nestedblock--reconcile_account))
 
 ### Read-Only
 
